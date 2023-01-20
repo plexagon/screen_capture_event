@@ -4,8 +4,9 @@ import 'dart:io';
 import 'package:flutter/services.dart';
 
 class ScreenCaptureEvent {
-  final List<Function(bool recorded)> _screenRecordListener = [];
-  final List<Function(String filePath)> _screenshotListener = [];
+  final _screenRecordListener = <String, Function(bool recorded)>{};
+  final _screenshotListener = <String, Function(String filePath)>{};
+  final _id = DateTime.now().microsecondsSinceEpoch.toString();
 
   static const MethodChannel _channel = MethodChannel('screencapture_method');
 
@@ -14,12 +15,12 @@ class ScreenCaptureEvent {
     _channel.setMethodCallHandler((call) async {
       switch (call.method) {
         case "screenshot":
-          for (var callback in _screenshotListener) {
+          for (var callback in _screenshotListener.values) {
             callback.call(call.arguments);
           }
           break;
         case "screenrecord":
-          for (var callback in _screenRecordListener) {
+          for (var callback in _screenRecordListener.values) {
             callback.call(call.arguments);
           }
           break;
@@ -40,15 +41,23 @@ class ScreenCaptureEvent {
 
   ///Listen when user screenrecord the screen
   ///You can add listener multiple time, and every listener will be executed
-  void addScreenRecordListener(Function(bool recorded) callback) {
-    _screenRecordListener.add(callback);
+  void addScreenRecordListener(Function(bool recorded) callback, {String? id}) {
+    _screenRecordListener[id ?? _id] = callback;
   }
 
   ///Listen when user screenshot the screen
   ///You can add listener multiple time, and every listener will be executed
   ///Note : filePath only work for android
-  void addScreenShotListener(Function(String filePath) callback) {
-    _screenshotListener.add(callback);
+  void addScreenShotListener(Function(String filePath) callback, {String? id}) {
+    _screenshotListener[id ?? _id] = callback;
+  }
+
+  void removeScreenRecordListener(String? id) {
+    _screenRecordListener.remove(id ?? _id);
+  }
+
+  void removeScreenShotListener(String? id) {
+    _screenshotListener.remove(id ?? _id);
   }
 
   ///Start watching capture behavior

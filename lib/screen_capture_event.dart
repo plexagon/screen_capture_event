@@ -52,11 +52,11 @@ class ScreenCaptureEvent {
     _screenshotListener[id ?? _id] = callback;
   }
 
-  void removeScreenRecordListener(String? id) {
+  void removeScreenRecordListener({String? id}) {
     _screenRecordListener.remove(id ?? _id);
   }
 
-  void removeScreenShotListener(String? id) {
+  void removeScreenShotListener({String? id}) {
     _screenshotListener.remove(id ?? _id);
   }
 

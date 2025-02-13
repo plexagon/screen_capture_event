@@ -22,6 +22,7 @@ rootProject.allprojects {
 apply plugin: 'com.android.library'
 
 android {
+    namespace 'id.nizwar.screen_capture_event'
     compileSdkVersion 30
 
     compileOptions {
